@@ -1,0 +1,49 @@
+# Manga2Motion Color Palette Configuration
+
+presets:
+  protagonist_heroic:
+    name: "Protagonist (Heroic Red/Navy)"
+    hair: "#C0392B"
+    skin: "#F5CBA7"
+    eyes: "#2980B9"
+    primary_clothing: "#1B2631"
+    secondary_clothing: "#E74C3C"
+    accent: "#F39C12"
+
+  antagonist_shadow:
+    name: "Antagonist (Shadow/Obsidian)"
+    hair: "#2C3E50"
+    skin: "#EAEDED"
+    eyes: "#922B21"
+    primary_clothing: "#17202A"
+    secondary_clothing: "#5B2C6F"
+    accent: "#A93226"
+
+  companion_mystic:
+    name: "Companion (Mystic Violet)"
+    hair: "#8E44AD"
+    skin: "#FADBD8"
+    eyes: "#16A085"
+    primary_clothing: "#F4F6F7"
+    secondary_clothing: "#52BE80"
+    accent: "#F4D03F"
+
+environment_palettes:
+  dusk_battlefield:
+    sky_top: "#1A252C"
+    sky_horizon: "#D35400"
+    ground: "#424949"
+    ambient_light: "#E59866"
+    rim_light: "#FAD7A0"
+
+  ruined_temple:
+    sky_top: "#34495E"
+    sky_horizon: "#7F8C8D"
+    ground: "#566573"
+    ambient_light: "#BDC3C7"
+    rim_light: "#EAECEE"
+
+reference_extraction:
+  num_dominant_colors: 5
+  quantization_method: "kmeans"
+  color_space: "LAB"

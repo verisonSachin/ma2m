@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  # =========================================================================
+  # 1. Main Manga2Motion Application (Gradio WebUI + CLI + Pipeline Engine)
+  # =========================================================================
+  manga2motion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manga2motion-app
+    restart: unless-stopped
+    ports:
+      - "7860:7860"
+    environment:
+      # Execution mode:
+      # - "false": Use local PyTorch / Diffusers pipeline inside container
+      # - "true": Offload image generation to open API provider (free cloud or local container)
+      - USE_IMAGE_API=${USE_IMAGE_API:-false}
+
+      # Open-source Free API Provider:
+      # - "pollinations": 100% free, open-source generative API (no API key required)
+      # - "huggingface": Hugging Face Free Serverless Inference API (requires optional HF_TOKEN)
+      # - "local_sd_api": Connects to the local containerized open-source SD-WebUI/ComfyUI API
+      - IMAGE_API_PROVIDER=${IMAGE_API_PROVIDER:-pollinations}
+
+      # URL for containerized local SD API (service 'sd-api' below)
+      - LOCAL_SD_API_URL=http://sd-api:7860
+
+      # Optional Hugging Face Token for serverless anime models
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HF_MODEL=${HF_MODEL:-cagliostrolab/animagine-xl-3.1}
+
+      # Automatic fallback to free open APIs if GPU VRAM is insufficient
+      - ENABLE_FREE_API_FALLBACK=true
+
+      # Python buffer & host settings
+      - PYTHONUNBUFFERED=1
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+    volumes:
+      # Persistent storage for downloaded weights, user uploads, and renders
+      - ./models:/app/models
+      - ./inputs:/app/inputs
+      - ./outputs:/app/outputs
+      - ./config:/app/config
+    networks:
+      - manga2motion-net
+    # GPU Acceleration configuration (NVIDIA Container Toolkit)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # =========================================================================
+  # 2. Local Open-Source Stable Diffusion REST API Service
+  #    Run with: docker compose --profile local-diffusion-api up
+  # =========================================================================
+  sd-api:
+    image: universalservices/automatic1111:latest
+    container_name: manga2motion-sd-api
+    profiles:
+      - local-diffusion-api
+    restart: unless-stopped
+    ports:
+      - "7861:7860"
+    environment:
+      - CLI_ARGS=--api --listen --enable-insecure-extension-access --skip-torch-cuda-test --no-half-vae --xformers
+    volumes:
+      - ./models/sd-webui:/data
+      - ./outputs/sd-webui:/output
+    networks:
+      - manga2motion-net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+networks:
+  manga2motion-net:
+    driver: bridge

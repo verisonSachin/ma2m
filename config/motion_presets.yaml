@@ -1,0 +1,58 @@
+# Manga2Motion Camera Motion Presets & Curve Profiles
+
+presets:
+  camera_dolly_in:
+    name: "Dramatic Dolly Push-In"
+    description: "Smooth camera forward thrust magnifying emotional intensity and focal character details."
+    zoom_start: 1.0
+    zoom_end: 1.25
+    pan_x: [0.0, 0.0]
+    pan_y: [0.0, -0.05]
+    rotation_degrees: 0.0
+    easing: "cubic_ease_in_out"
+    default_prompt_tag: "cinematic camera push-in, intense focus, dramatic anime depth"
+
+  dynamic_action_dash:
+    name: "Dynamic Action Dash"
+    description: "Rapid lateral and forward rush with kinetic speedlines and horizontal motion blur."
+    zoom_start: 1.05
+    zoom_end: 1.35
+    pan_x: [-0.15, 0.2]
+    pan_y: [0.05, -0.05]
+    rotation_degrees: 1.5
+    easing: "exponential_in"
+    default_prompt_tag: "fast action motion, slashing attack, dynamic camera whip, anime motion lines"
+
+  impact_freeze_settle:
+    name: "Impact Settle & Camera Shake"
+    description: "Sudden explosive stop followed by subtle harmonic decay and camera settle."
+    zoom_start: 1.2
+    zoom_end: 1.15
+    pan_x: [0.0, 0.0]
+    pan_y: [0.0, 0.0]
+    shake_intensity: 0.08
+    shake_decay: 0.85
+    easing: "elastic_out"
+    default_prompt_tag: "shockwave impact, floating particles, settling dust, cinematic freeze"
+
+  parallax_pan_right:
+    name: "Horizontal Parallax Pan (Right)"
+    description: "Multi-plane camera traverse moving rightward with depth-offset foreground sliding faster."
+    zoom_start: 1.0
+    zoom_end: 1.0
+    pan_x: [-0.2, 0.2]
+    pan_y: [0.0, 0.0]
+    rotation_degrees: 0.0
+    easing: "linear"
+    default_prompt_tag: "smooth panning camera shot, horizontal tracking, scenic anime background"
+
+  dutch_angle_tilt:
+    name: "Dutch Angle Tension Tilt"
+    description: "Canting camera roll angle paired with vertical rise for suspense."
+    zoom_start: 1.0
+    zoom_end: 1.12
+    pan_x: [0.0, 0.05]
+    pan_y: [0.1, -0.1]
+    rotation_degrees: 4.5
+    easing: "sine_ease_in_out"
+    default_prompt_tag: "dutch angle framing, psychological tension, tilt camera movement"

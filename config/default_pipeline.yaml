@@ -1,0 +1,87 @@
+# Manga2Motion Master Pipeline Execution Configuration
+
+project:
+  name: "Manga2Motion"
+  version: "1.0.0"
+  output_dir: "outputs"
+  device: "cuda" # cuda, cpu, mps
+  precision: "fp16" # fp16, fp32, bf16
+
+timeline:
+  total_frames: 30
+  target_fps: 24
+  mode: "climax_continuity" # "climax_continuity" (Mode A) or "multi_panel_montage" (Mode B)
+  resolution: [768, 512] # [height, width]
+
+ingestion:
+  panel_detection:
+    yolo_model_path: "models/yolov8_manga.pt"
+    confidence_threshold: 0.35
+    iou_threshold: 0.45
+    min_panel_area_ratio: 0.02
+    fallback_contour_method: true
+  bubble_detection:
+    min_bubble_area: 400
+    white_threshold: 220
+    edge_dilation_kernel: 7
+  inpainting:
+    engine: "lama" # "lama" or "telea"
+    model_path: "models/big-lama.pt"
+    dilate_mask_pixels: 5
+
+colorization:
+  screentone_removal:
+    bilateral_d: 9
+    bilateral_sigma_color: 75
+    bilateral_sigma_space: 75
+    lineart_xdog_gamma: 0.98
+    lineart_xdog_phi: 200.0
+    lineart_xdog_epsilon: 0.01
+  diffusion:
+    base_model: "cagliostrolab/animagine-xl-3.1"
+    controlnet_model: "lllyasviel/control_v11p_sd15_lineart_anime"
+    use_ip_adapter: true
+    ip_adapter_weight: 0.65
+    guidance_scale: 7.5
+    num_inference_steps: 30
+    prompt_prefix: "masterpiece, best quality, highres anime illustration, vibrant coloring"
+    negative_prompt: "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry"
+  harmonization:
+    enable_histogram_matching: true
+    delta_e_threshold: 5.0
+
+decomposition:
+  sam2:
+    model_checkpoint: "models/sam2_hiera_large.pt"
+    model_cfg: "sam2_hiera_l.yaml"
+    points_per_side: 32
+    pred_iou_thresh: 0.88
+    stability_score_thresh: 0.95
+  depth:
+    model_type: "Depth-Anything-V2-Base" # "Depth-Anything-V2-Base" or "MiDaS_small"
+    model_path: "models/depth_anything_v2_vitb.pth"
+    normalize_depth: true
+
+motion:
+  engine: "animatediff" # "animatediff", "wan2.1", "svd"
+  animatediff_model: "guoyww/animatediff-motion-adapter-v1-5-2"
+  motion_lora: "guoyww/animatediff-motion-lora-zoom-in"
+  num_native_frames: 16
+  motion_strength: 0.75
+  guidance_scale: 7.5
+
+postprocessing:
+  interpolation:
+    engine: "rife" # "rife", "film", or "flow"
+    rife_model_path: "models/rife46.pth"
+    target_frames: 30
+  deflicker:
+    temporal_window: 5
+    frequency_filter_strength: 0.4
+    preserve_lineart_edges: true
+  export:
+    codec: "libx264"
+    pix_fmt: "yuv420p"
+    crf: 18
+    preset: "slow"
+    export_prores: false
